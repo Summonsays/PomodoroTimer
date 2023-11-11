@@ -1,6 +1,6 @@
 :root {
     --opacity: 0.8;
-    --size: 10px;
+    --size: 15px;
 }
 #background{
     width: 100%;
@@ -54,7 +54,7 @@ button {
     background: white;
     position: relative;
     z-index: 100;
-    font-size: calc(3*var(--size));
+    font-size: calc(4*var(--size));
     /*cursor: pointer;*/
 }
 .right-hand-area {
@@ -62,7 +62,7 @@ button {
 }
 .left-side-bar div {
     padding: 5px;
-    width: 100px;
+    width: calc(20*var(--size));
 }
 .active {
     color: blue;
