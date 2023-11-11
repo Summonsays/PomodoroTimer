@@ -5,100 +5,15 @@
 		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
 		<meta http-equiv="X-UA-Compatible" content="ie=edge" />
 		<title>Pomodoro Timer</title>
-		<!--<link rel="stylesheet" href="style.css">-->
-		<style>
-			/*#background {
-				width: 100%;
-				height: 100vh;
-				background-size: contain;
-				background-repeat: no-repeat;
-				background-position: center;
-			}*/
-			#background{
-				width: 100%;
-				height: 100vh;
-				background-size: cover;
-				background-position: center;
-			}
-			body {
-				display: flex;
-			}
-			body,
-			html {
-				margin: 0;
-				padding: 0;
-			}
-			#timer {
-				text-align: center;
-				margin: 0;
-				font-size: 150px;
-			}
-			button {
-				background-color: #04aa6d;
-				border: none;
-				color: white;
-				padding: 8px;
-				text-align: center;
-				text-decoration: none;
-				display: inline-block;
-				font-size: 16px;
-				margin: 8px 2px;
-				border-radius: 10px;
-			}
-			.highlightBackground {
-				background: white;
-				height: 100%;
-				opacity: 0.8;
-			}
-			.highlightBackground h1 {
-				padding-top: 5px;
-			}
-			.highlightBackground h2 {
-				padding-left: 20px;
-				padding-right: 10px;
-			}
-			.disclaimer {
-				color: red;
-				background: black;
-			}
-			.left-side-bar {
-				background: white;
-				position: relative;
-				z-index: 100;
-				/*cursor: pointer;*/
-			}
-			.right-hand-area {
-				float: right;
-			}
-			.left-side-bar div {
-				padding: 5px;
-				width: 100px;
-			}
-			.active {
-				color: blue;
-				text-decoration: underline;
-			}
-			.top {
-				display: flex;
-				position: relative;
-				justify-content: center;
-			}
-			.spotify-iframe{
-				position: absolute;
-				float: right;
-				right: 0px;
-			}
-		</style>
+		<link rel="stylesheet" href="assets/css/styles.css" />
 
 		<script type="text/javascript">
 			//Todo:
 			/*
 			 * Ability to start anywhere on the leftpane
-			 * add audio
-			 * 		beeps when done
-			 *		volume slider: https://developer.mozilla.org/en-US/docs/Web/API/HTMLMediaElement/volume
-			 *		https://developer.mozilla.org/en-US/docs/Web/API/HTMLMediaElement
 			 *	cach timer so reload doesn't interupt
+			 * display settings, preset sizes (see variable)
+			 * https://stackoverflow.com/questions/49402471/how-to-use-javascript-variables-in-css
 			 */
 			var numberOfImages = 6;
 			var defaultTime = 1500;
@@ -114,7 +29,17 @@
 			function init() {
 				randomImages();
 				updateStatus();
+				//start hidden
+				toggleShowHideMenu();
+				toggleShow(document.getElementById("timeSettings"));
 				//test();
+				initEventListeners();
+			}
+
+			function initEventListeners() {
+				document
+					.getElementById("settingsMenu")
+					.addEventListener("click", (event) => handleSettingsClick(event));
 			}
 
 			function test() {
@@ -181,12 +106,11 @@
 						console.log("long break");
 					}
 				}
-				if(!reset)
-				{
+				if (!reset) {
 					updateStatus();
 					randomImages();
 					snd.play();
-					snd.currentTime=0;
+					snd.currentTime = 0;
 				}
 			}
 
@@ -202,16 +126,15 @@
 
 			function timeUpdate2() {
 				if (timerUpdate != null) clearTimeout(timerUpdate);
-				
+
 				if (timeLeft >= 0) {
-						document.getElementById("timer").innerHTML = formatTime(timeLeft);
-						timeLeft--;
-						if (!isPaused)
-							timerUpdate = window.setTimeout(function () {
-								timeUpdate2();
-							}, 1000);
-				} else 
-				{
+					document.getElementById("timer").innerHTML = formatTime(timeLeft);
+					timeLeft--;
+					if (!isPaused)
+						timerUpdate = window.setTimeout(function () {
+							timeUpdate2();
+						}, 1000);
+				} else {
 					trackProgress++;
 					timeLoopControl();
 				}
@@ -230,7 +153,22 @@
 				document
 					.getElementById("currentStatus")
 					.children[trackProgress].classList.add("active");
-				timeUpdate2()
+				timeUpdate2();
+			}
+			function handleSettingsClick(event) {
+				let choice = event.target.innerHTML;
+				console.log(event.target.innerHTML);
+				event.stopPropagation();
+				if (choice == "Timer Settings")
+					toggleShow(document.getElementById("timeSettings"));					
+			}
+
+			function toggleShowHideMenu() {
+				toggleShow(document.getElementById("settingsMenu"));
+			}
+			function toggleShow(element) {
+				if (element.style.display === "none") element.style.display = "block";
+				else element.style.display = "none";
 			}
 			window.addEventListener("load", init);
 		</script>
@@ -261,30 +199,30 @@
 						<div style="text-align: center">
 							<button id="playPause" onClick="pausePlayToggle()">Play</button>
 							<button id="reset" onClick="resetTimes()">Reset</button>
-							<div class="highlightBackground">
-								Work Timer: <input id="workTimer" type="number" /> Break Timer:
-								<input id="breakTimer" type="number" />
-								<button id="playPause" onClick="setNewValues()">Set</button>
-							</div>
-							<div class="disclaimer">
-								I do NOT claim any rights of any images used in this
+							<div id="timeSettings">
+								<div class="highlightBackground">
+									Work Timer: <input id="workTimer" type="number" /> Break
+									Timer:
+									<input id="breakTimer" type="number" />
+									<button id="playPause" onClick="setNewValues()">Set</button>
+								</div>
+								<div class="disclaimer">
+									I do NOT claim any rights of any images used in this
+								</div>
 							</div>
 						</div>
 					</div>
 				</div>
 			</div>
 		</div>
-		<div class="spotify-iframe">
-			<iframe
-				style="border-radius: 12px"
-				src="https://open.spotify.com/embed/playlist/05OkqemhVmD27zXfdnyNsy?utm_source=generator&theme=0"
-				width="100%"
-				height="152"
-				frameborder="0"
-				allowfullscreen=""
-				allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"
-				loading="lazy"
-			></iframe>
+		<div id="settings" onClick="toggleShowHideMenu()">
+			<div><button>Settings WIP</button></div>
+			<div id="settingsMenu">
+				<ul>
+					<li>Timer Settings</li>
+					<li>Display Settings</li>
+				</ul>
+			</div>
 		</div>
 	</body>
 </html>
