@@ -18,6 +18,7 @@ var snd = new Audio("./assets/sounds/beep1.mp3");
 var month = new Date().toLocaleString('default', { month: 'long' });
 
 function init() {
+	testNextMonth();
 	randomImages();
 	updateStatus();
 	//start hidden
@@ -31,13 +32,6 @@ function initEventListeners() {
 	document
 		.getElementById("settingsMenu")
 		.addEventListener("click", (event) => handleSettingsClick(event));
-}
-
-function test() {
-	defaultTime = 10;
-	defaultBreak = 10;
-	defaultLongBreak = 3;
-	timeLeft = 1;
 }
 
 function nextBackground() {
@@ -162,5 +156,21 @@ function toggleShowHideMenu() {
 function toggleShow(element) {
 	if (element.style.display === "none") element.style.display = "block";
 	else element.style.display = "none";
+}
+
+function testNextMonth() {
+	var now = new Date();
+
+	if (now.getMonth() == 11) {
+		month= new Date(now.getFullYear() + 1, 0, 1).toLocaleString('default', { month: 'long' });
+	} else {
+		month= new Date(now.getFullYear(), now.getMonth() + 1, 1).toLocaleString('default', { month: 'long' });
+	}
+}
+function test() {
+	defaultTime = 10;
+	defaultBreak = 10;
+	defaultLongBreak = 3;
+	timeLeft = 1;
 }
 window.addEventListener("load", init);
