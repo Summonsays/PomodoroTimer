@@ -1,51 +1,141 @@
 //Todo:
 /*
- * Ability to start anywhere on the leftpane
+ * Ability to start anywhere on the toppane
  *	cach timer so reload doesn't interupt
  * display settings, preset sizes (see variable)
  * https://stackoverflow.com/questions/49402471/how-to-use-javascript-variables-in-css
  */
-var numberOfImages = 10;
 var defaultTime = 1500;
 var defaultBreak = 300;
 var defaultLongBreak = 900;
-var backgroundImageNum = 0;
+var backgroundImageName ="";
 var isPaused = true;
 var timerUpdate;
 var trackProgress = 0;
 var timeLeft = 1500;
 var snd = new Audio("./assets/sounds/beep1.mp3");
 var month = new Date().toLocaleString('default', { month: 'long' });
+var fileArray =[];
+var debugMode = true;
 
+//#region Initial setup
 function init() {
+	load();
+	initImages();
+	//testNextMonth();
 	randomImages();
 	updateStatus();
 	//start hidden
 	toggleShowHideMenu();
 	toggleShow(document.getElementById("timeSettings"));
-	//test();
 	initEventListeners();
+	window.addEventListener("beforeunload", function(e){
+		save();
+	 });
+	 updateDisplayTime();
+		
+}
+
+function save(andTimeLeft = true){
+	let saveObject = 
+	{
+		defaultTime : defaultTime,
+		defaultBreak: defaultBreak,
+		defaultLongBreak: defaultLongBreak,
+		trackProgress: trackProgress,
+	}
+	if(andTimeLeft)
+		saveObject.timeLeft = timeLeft+1;
+	//localStorage.removeItem('pomodoroCache');
+	localStorage.setItem('pomodoroCache', JSON.stringify(saveObject));
+}
+
+function load(){
+	let tempObject = localStorage.getItem('pomodoroCache');
+	if(tempObject!=null)
+	{
+		tempObject=JSON.parse(tempObject);
+		defaultTime = tempObject.defaultTime;
+		defaultBreak= tempObject.defaultBreak;
+		defaultLongBreak = tempObject.defaultLongBreak;
+		trackProgress = tempObject.trackProgress;
+		if(tempObject.timeLeft)
+			timeLeft = tempObject.timeLeft;
+	}
+	
+	document.getElementById("workTimer").value = defaultTime/60;
+	document.getElementById("breakTimer").value = defaultBreak/60;
+	document.getElementById("longBreakTimer").value = defaultLongBreak/60;
+}
+
+function initImages()
+{
+	for(var i =0; i< folderData.length;i++)
+	{
+		if(folderData[i].FolderName===month)
+			fileArray = folderData[i].Files
+	}
 }
 
 function initEventListeners() {
 	document
 		.getElementById("settingsMenu")
 		.addEventListener("click", (event) => handleSettingsClick(event));
+	document.getElementsByClassName("presetTimes")[0].addEventListener("click", (event) => handleSettingsClick(event));
 }
+//#endregion
 
-function test() {
-	defaultTime = 10;
-	defaultBreak = 10;
-	defaultLongBreak = 3;
-	timeLeft = 1;
-}
-
+//#region Background
 function nextBackground() {
-	var temp = (Math.random() * numberOfImages + 1) >> 0;
-	if (temp == backgroundImageNum) nextBackground();
-	else backgroundImageNum = temp;
+	var temp = (Math.random() * fileArray.length) >> 0;
+	if (temp == fileArray[temp]) nextBackground();
+	else backgroundImageName = fileArray[temp];
 }
 
+function randomImages() {
+	nextBackground();
+    var temp = encodeURI("url(./assets/Monthly Photo Changeover/"+month+"/" + backgroundImageName+")");
+	document.getElementById("background").style.backgroundImage =
+		"url(./assets/Monthly%20Photo%20Changeover/"+month+"/" + backgroundImageName+")";
+	document.getElementById("background").style.backgroundImage = temp;
+}
+//#endregion
+
+//#region helperFunctions
+function updateDisplayTime(){	
+	document.getElementById("timer").innerHTML = formatTime(timeLeft);
+}
+
+function resetTimes() {
+	trackProgress=0;
+	updateStatus();
+	timeLoopControl(true);
+	updateDisplayTime();
+}
+
+function formatTime(time) {
+	return time % 60 < 10
+		? ((time / 60) >> 0) + ":0" + (time % 60)
+		: ((time / 60) >> 0) + ":" + (time % 60);
+}
+
+//updates the css for the top status box
+function updateStatus() {
+	document.getElementsByClassName("active")[0].classList.remove("active");
+	document
+		.getElementById("currentStatus")
+		.children[trackProgress].classList.add("active");
+	timeUpdate2();
+}
+
+function toggleShow(element) {
+	if (element.style.display === "none") element.style.display = "block";
+	else element.style.display = "none";
+}
+
+//#endregion
+
+//#region Main Timer functions 
 function pausePlayToggle() {
 	if (isPaused) {
 		isPaused = !isPaused;
@@ -58,22 +148,6 @@ function pausePlayToggle() {
 	}
 }
 
-function resetTimes() {
-	timeLoopControl(true);
-}
-function randomImages() {
-	nextBackground();
-    var temp = "url(./assets/Monthly Photo Changeover/"+month+"/"+month+" " + backgroundImageNum + ".jpg)";
-    console.log(temp);
-	document.getElementById("background").style.backgroundImage =
-		"url(./assets/Monthly%20Photo%20Changeover/"+month+"/"+month+"%20" + backgroundImageNum + ".jpg)";
-}
-function formatTime(time) {
-	return time % 60 < 10
-		? ((time / 60) >> 0) + ":0" + (time % 60)
-		: ((time / 60) >> 0) + ":" + (time % 60);
-}
-
 function timeLoopControl(reset) {
 	if (trackProgress > 7) trackProgress = 0;
 	switch (trackProgress) {
@@ -83,7 +157,6 @@ function timeLoopControl(reset) {
 		case 6:
 			{
 				timeLeft = defaultTime;
-				console.log("pomo " + trackProgress);
 			}
 			break;
 		case 1:
@@ -91,12 +164,10 @@ function timeLoopControl(reset) {
 		case 5:
 			{
 				timeLeft = defaultBreak;
-				console.log("break " + trackProgress);
 			}
 			break;
 		case 7: {
 			timeLeft = defaultLongBreak;
-			console.log("long break");
 		}
 	}
 	if (!reset) {
@@ -107,21 +178,11 @@ function timeLoopControl(reset) {
 	}
 }
 
-function setNewValues() {
-	var newWTime = document.getElementById("workTimer").value;
-	var newBTime = document.getElementById("breakTimer").value;
-	if (!isNaN(newWTime) && !isNaN(newBTime)) {
-		console.log("setting time");
-		defaultTime = newWTime * 60;
-		defaultBreak = newBTime * 60;
-	}
-}
-
 function timeUpdate2() {
 	if (timerUpdate != null) clearTimeout(timerUpdate);
 
 	if (timeLeft >= 0) {
-		document.getElementById("timer").innerHTML = formatTime(timeLeft);
+		updateDisplayTime();
 		timeLeft--;
 		if (!isPaused)
 			timerUpdate = window.setTimeout(function () {
@@ -132,35 +193,52 @@ function timeUpdate2() {
 		timeLoopControl();
 	}
 }
+//#endregion
 
-//updates the css for the left pane status box
-function updateStatus() {
-	if (trackProgress == 0) {
-		document
-			.getElementById("currentStatus")
-			.children[7].classList.remove("active");
-	} else
-		document
-			.getElementById("currentStatus")
-			.children[trackProgress - 1].classList.remove("active");
-	document
-		.getElementById("currentStatus")
-		.children[trackProgress].classList.add("active");
-	timeUpdate2();
+//#region Settings functions
+function setNewValues() {
+	var newWTime = document.getElementById("workTimer").value;
+	var newBTime = document.getElementById("breakTimer").value;
+	let newLBTime = document.getElementById("longBreakTimer").value;
+
+	defaultTime = newWTime === ""? defaultTime: newWTime * 60;
+	defaultBreak = newBTime === ""? defaultBreak: newBTime* 60;
+	defaultLongBreak = newLBTime === ""? defaultLongBreak: newLBTime*60;
+	save(false);
+	resetTimes();
+	isPaused=true;
+	pausePlayToggle();
 }
+
 function handleSettingsClick(event) {
 	let choice = event.target.innerHTML;
-	console.log(event.target.innerHTML);
 	event.stopPropagation();
 	if (choice == "Timer Settings")
 		toggleShow(document.getElementById("timeSettings"));
+	if(/^[0-9]+\/[0-9]+\/[0-9]+$/.test(choice))
+	{
+		let temp = choice.split("/");
+		document.getElementById("workTimer").value = temp[0];
+		document.getElementById("breakTimer").value = temp[1];
+		document.getElementById("longBreakTimer").value = temp[2];
+
+	}
 }
 
 function toggleShowHideMenu() {
 	toggleShow(document.getElementById("settingsMenu"));
 }
-function toggleShow(element) {
-	if (element.style.display === "none") element.style.display = "block";
-	else element.style.display = "none";
+//#endregion
+
+//#region debug/testing
+function testNextMonth() {
+	var now = new Date();
+
+	if (now.getMonth() == 11) {
+		month= new Date(now.getFullYear() + 1, 0, 1).toLocaleString('default', { month: 'long' });
+	} else {
+		month= new Date(now.getFullYear(), now.getMonth() + 1, 1).toLocaleString('default', { month: 'long' });
+	}
 }
+//#endregion
 window.addEventListener("load", init);

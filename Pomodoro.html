@@ -7,13 +7,14 @@
 		<title>Pomodoro Timer</title>
 		<link rel="stylesheet" href="assets/css/styles.css" />
 		<script type="text/javascript" src="assets/js/Pomodoro.js"></script>
+		<script type="text/javascript" src="assets/js/output.js"></script>
 	</head>
 	<body>
 		<div id="background">
 			<div style="display: flex; justify-content: center">
-				<div style="position: absolute; top: 25vh">
+				<div>
 					<div class="top">
-						<div id="currentStatus" class="left-side-bar">
+						<div id="currentStatus">
 							<div class="active">Pomo 1</div>
 							<div>Break 1</div>
 							<div>Pomo 2</div>
@@ -23,7 +24,7 @@
 							<div>Pomo 4</div>
 							<div>Long Break</div>
 						</div>
-						<div class="right-hand-area">
+						<div>
 							<div class="highlightBackground">
 								<h1 id="label" style="margin: 0px; text-align: center"></h1>
 								<h2 id="timer"></h2>
@@ -35,15 +36,21 @@
 							<button id="playPause" onClick="pausePlayToggle()">Play</button>
 							<button id="reset" onClick="resetTimes()">Reset</button>
 							<div id="timeSettings">
-								<div class="highlightBackground">
-									Work Timer: <input id="workTimer" type="number" /> Break
-									Timer:
-									<input id="breakTimer" type="number" />
+								<div class="settings">
+									Work Timer: <input id="workTimer" type="number" /> 
+									Break Timer: <input id="breakTimer" type="number" />
+									Long Break Timer: <input id="longBreakTimer" type="number" />
 									<button id="playPause" onClick="setNewValues()">Set</button>
 								</div>
-								<div class="disclaimer">
-									I do NOT claim any rights of any images used in this
+								<div class="presetTimes">
+									Presets:
+									<div>50/10/15</div>
+									<div>45/5/10</div>
+									<div>30/5/10</div>
 								</div>
+								<!--<div class="disclaimer">
+									I do NOT claim any rights of any images used in this
+								</div>-->
 							</div>
 						</div>
 					</div>
