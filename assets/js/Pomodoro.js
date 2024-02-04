@@ -5,20 +5,21 @@
  * display settings, preset sizes (see variable)
  * https://stackoverflow.com/questions/49402471/how-to-use-javascript-variables-in-css
  */
-var numberOfImages = 10;
 var defaultTime = 1500;
 var defaultBreak = 300;
 var defaultLongBreak = 900;
-var backgroundImageNum = 0;
+var backgroundImageName ="";
 var isPaused = true;
 var timerUpdate;
 var trackProgress = 0;
 var timeLeft = 1500;
 var snd = new Audio("./assets/sounds/beep1.mp3");
 var month = new Date().toLocaleString('default', { month: 'long' });
+var fileArray =[];
 
 function init() {
-	testNextMonth();
+	initImages();
+	//testNextMonth();
 	randomImages();
 	updateStatus();
 	//start hidden
@@ -28,6 +29,15 @@ function init() {
 	initEventListeners();
 }
 
+function initImages()
+{
+	for(var i =0; i< folderData.length;i++)
+	{
+		if(folderData[i].FolderName===month)
+			fileArray = folderData[i].Files
+	}
+	console.log(fileArray);
+}
 function initEventListeners() {
 	document
 		.getElementById("settingsMenu")
@@ -35,9 +45,9 @@ function initEventListeners() {
 }
 
 function nextBackground() {
-	var temp = (Math.random() * numberOfImages + 1) >> 0;
-	if (temp == backgroundImageNum) nextBackground();
-	else backgroundImageNum = temp;
+	var temp = (Math.random() * fileArray.length) >> 0;
+	if (temp == fileArray[temp]) nextBackground();
+	else backgroundImageName = fileArray[temp];
 }
 
 function pausePlayToggle() {
@@ -57,10 +67,11 @@ function resetTimes() {
 }
 function randomImages() {
 	nextBackground();
-    var temp = "url(./assets/Monthly Photo Changeover/"+month+"/"+month+" " + backgroundImageNum + ".jpg)";
+    var temp = encodeURI("url(./assets/Monthly Photo Changeover/"+month+"/" + backgroundImageName+")");
     console.log(temp);
 	document.getElementById("background").style.backgroundImage =
-		"url(./assets/Monthly%20Photo%20Changeover/"+month+"/"+month+"%20" + backgroundImageNum + ".jpg)";
+		"url(./assets/Monthly%20Photo%20Changeover/"+month+"/" + backgroundImageName+")";
+	document.getElementById("background").style.backgroundImage = temp;
 }
 function formatTime(time) {
 	return time % 60 < 10

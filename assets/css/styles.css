@@ -29,10 +29,10 @@ button {
 
 
 
-
 /*class section*/
 .active {
-    color: blue;
+    background-color:  purple !important;
+    color: white;
     text-decoration: underline;
 }
 .disclaimer {
@@ -51,20 +51,21 @@ button {
     padding-left: 20px;
     padding-right: 10px;
 }
-.left-side-bar {
-    background: white;
+#currentStatus {
     position: relative;
     z-index: 100;
     font-size: calc(2*var(--size));
     /*cursor: pointer;*/
 }
-.left-side-bar div {
-    /*width: calc(20*var(--size));*/
-    float: left;
+#currentStatus > div {
+    background-color: white;
+    width: calc(15*var(--size));
+    display: table-cell;
+    text-align: center;
+    border: 2px solid black;
+    border-radius: 25px;
 }
-.right-hand-area {
-    float: right;
-}
+
 .top {
     position: relative;
     justify-content: center;
