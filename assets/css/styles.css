@@ -75,6 +75,24 @@ button {
     position: relative;
     top: calc((100vh - 35*var(--size))/2)
 }
+.settings{
+    background: white;
+    height: 100%;
+    /*opacity: var(--opacity);*/
+}
+.presetTimes{
+    text-align: left;
+    background-color: white;
+    border-spacing: 0px 5px;
+}
+.presetTimes div {
+    cursor: pointer;
+    padding: 5px 10px 5px 10px;
+    background-color: white;
+    display: table-cell;
+    border: 2px solid black;
+    border-radius: 25px;
+}
 
 /*ID Section*/
 #background{
