@@ -27,7 +27,7 @@ function init() {
 	updateStatus();
 	//start hidden
 	toggleShowHideMenu();
-	//toggleShow(document.getElementById("timeSettings"));
+	toggleShow(document.getElementById("timeSettings"));
 	initEventListeners();
 	window.addEventListener("beforeunload", function(e){
 		save();
@@ -81,6 +81,7 @@ function initEventListeners() {
 	document
 		.getElementById("settingsMenu")
 		.addEventListener("click", (event) => handleSettingsClick(event));
+	document.getElementsByClassName("presetTimes")[0].addEventListener("click", (event) => handleSettingsClick(event));
 }
 //#endregion
 
@@ -200,10 +201,13 @@ function setNewValues() {
 	var newBTime = document.getElementById("breakTimer").value;
 	let newLBTime = document.getElementById("longBreakTimer").value;
 
-		defaultTime = newWTime === ""? defaultTime: newWTime * 60;
-		defaultBreak = newBTime === ""? defaultBreak: newBTime* 60;
-		defaultLongBreak = newLBTime === ""? defaultLongBreak: newLBTime*60;
-		save(false);
+	defaultTime = newWTime === ""? defaultTime: newWTime * 60;
+	defaultBreak = newBTime === ""? defaultBreak: newBTime* 60;
+	defaultLongBreak = newLBTime === ""? defaultLongBreak: newLBTime*60;
+	save(false);
+	resetTimes();
+	isPaused=true;
+	pausePlayToggle();
 }
 
 function handleSettingsClick(event) {
@@ -211,6 +215,14 @@ function handleSettingsClick(event) {
 	event.stopPropagation();
 	if (choice == "Timer Settings")
 		toggleShow(document.getElementById("timeSettings"));
+	if(/^[0-9]+\/[0-9]+\/[0-9]+$/.test(choice))
+	{
+		let temp = choice.split("/");
+		document.getElementById("workTimer").value = temp[0];
+		document.getElementById("breakTimer").value = temp[1];
+		document.getElementById("longBreakTimer").value = temp[2];
+
+	}
 }
 
 function toggleShowHideMenu() {
